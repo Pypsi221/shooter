@@ -1,4 +1,4 @@
-from pygame import*
+from pygame import *
 from random import randint
 
 init()
@@ -9,7 +9,6 @@ FPS = 60
 mixer.init()
 mixer.music.load('sounds/space.ogg')
 mixer.music.set_volume(0.2)
-
 
 fire_snd = mixer.Sound('sounds/fire.ogg')
 
@@ -46,7 +45,6 @@ class Player(GameSprite):
             self.rect.x -= self.speed
         if keys_pressed[K_d] and self.rect.x < W - self.width:
             self.rect.x += self.speed
-
 
     def fire(self):
         bullet = Bullet(self.rect.centerx, self.rect.top, 15, 20, 20 , 'images/bullet.png')
@@ -90,9 +88,8 @@ class Buff(GameSprite):
         if self.rect.y > H - self.height:
             self.rect.x = randint(0, W - self.width)
             self.rect.y = -100
-        
 
-     
+
 player = Player(W / 2, H - 100, 50, 100, 5, 'images/rocket.png')
 life_boost = Buff(randint(0,W - 50),-100,50, 50, randint(2,5), 'images/aid.png')
 bullets_bust = Buff(randint(0,W - 50),-100,50, 50, randint(2,5), 'images/amb.png')
@@ -148,13 +145,21 @@ while game:
         bullets_bust.draw()
         bullets_bust.update()
 
+        # Додаємо зіткнення з бонусами
+        if sprite.collide_rect(player, life_boost):
+            life += 1
+            life_boost = Buff(randint(0, W - 50), -100, 50, 50, randint(2, 5), 'images/aid.png')
+
+        if sprite.collide_rect(player, bullets_bust):
+            shoot_count += 10
+            bullets_bust = Buff(randint(0, W - 50), -100, 50, 50, randint(2, 5), 'images/amb.png')
 
         if sprite.groupcollide(bullets,enemies,True,True):
             killed += 1
             enemy = Enemy(randint(0, W - 70), randint(-35, 10), 70, 35, randint(1, 3), 'images/ufo.png')
             enemies.add(enemy)
 
-        if sprite.groupcollide(bullets, asteroids, True, False):#зіткнення куль з ворогами
+        if sprite.groupcollide(bullets, asteroids, True, False):
             pass
 
         if sprite.spritecollide(player, asteroids,  True):
